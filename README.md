@@ -10,6 +10,9 @@ iOS - 监听音量按键及监听静音按键,自定义音量条
 ![](http://7xn5aw.com1.z0.glb.clouddn.com/AudioListenerlisten.gif) 
 
 看不到图点这个 > http://7xn5aw.com1.z0.glb.clouddn.com/AudioListenerlisten.gif
+PS:
+注意看点1.状态栏自定义音量条
+注意看点2.切换物理静音开关,button文案自动切换
 
 # 使用方法
 ## 1.导入头文件
