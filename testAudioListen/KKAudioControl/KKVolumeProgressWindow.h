@@ -35,5 +35,6 @@ typedef NS_ENUM(NSInteger,KKVolumeViewAnimation){
 @property (nonatomic, weak) id<KKVolumeViewDelegate> delegate;
 
 + (instancetype)defaultVolumeView;
+- (void)removeAllAudioListen;
 
 @end

@@ -29,7 +29,7 @@ const CGFloat SidePadding = 10;
 
 - (void)dealloc
 {
-    [self removeAudioListen];
+    [self removeAllAudioListen];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -48,16 +48,20 @@ const CGFloat SidePadding = 10;
     volume.animationType = KKVolumeViewAnimationFade;
     volume.progressBarTintColor = [UIColor blackColor];
     volume.progressBarBackgroundColor = [UIColor lightGrayColor];
+    volume.volumeStatusBackgroundColor = [UIColor whiteColor];
     return volume;
 }
 
 - (void)setup
 {
-    NSError *error;
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    [[AVAudioSession sharedInstance] setActive:YES error:&error];
-    if (error) {
-        NSLog(@"Unable to initialize AVAudioSession");
+    
+    __block NSError *regError;
+    [self regVolumeActive:YES errorCompletion:^(NSError *error) {
+        regError = error;
+    }];
+    
+    if (regError) {
         return;
     }
     
@@ -73,7 +77,7 @@ const CGFloat SidePadding = 10;
     self.backColorView.backgroundColor = self.progressBarBackgroundColor?self.progressBarBackgroundColor : [UIColor blackColor];
     self.overlayView.backgroundColor = self.progressBarTintColor?self.progressBarTintColor : [UIColor grayColor];
     
-    [self addAudioListen];
+    [self addApplicationStatusListen];
     [self updateVolume:[AVAudioSession sharedInstance].outputVolume animated:NO];
 }
 
@@ -119,7 +123,6 @@ const CGFloat SidePadding = 10;
 {
     if (!_BGView) {
         _BGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, StatusHeight)];
-        _BGView.backgroundColor = [UIColor whiteColor];
         [self.rootViewController.view addSubview:_BGView];
         _BGView.transform = CGAffineTransformMakeTranslation(0, -StatusHeight);
     }
@@ -209,37 +212,12 @@ const CGFloat SidePadding = 10;
     }];
 }
 
-#pragma mark - audioListen
+#pragma mark - audioListenValueChange
 
 - (void)volumeChanged:(NSNotification *)notification
 {
     float volume = [[[notification userInfo] objectForKey:@"AVSystemController_AudioVolumeNotificationParameter"] floatValue];
-    
     [self updateVolume:volume animated:YES];
-}
-
-- (void)addAudioListen
-{
-//    [[AVAudioSession sharedInstance] addObserver:self
-//                                      forKeyPath:@"outputVolume"
-//                                         options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-//                                         context:(void *)[AVAudioSession sharedInstance]];
-    //和上面的2选1即可,不过上面的有个bug,在音量满的时候,继续点击音量按键,不会再触发
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(volumeChanged:)
-                                                 name:@"AVSystemController_SystemVolumeDidChangeNotification"
-                                               object:nil];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterBackground:)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(willReturnToForeground:)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
-
-    
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
@@ -253,20 +231,89 @@ const CGFloat SidePadding = 10;
 
 - (void)didEnterBackground:(NSNotification *)noti
 {
-    
+    [self regVolumeActive:NO errorCompletion:nil];
 }
 
 - (void)willReturnToForeground:(NSNotification *)noti
 {
+    [self regVolumeActive:YES errorCompletion:nil];
+}
+
+- (void)willResignActive:(NSNotification *)noti
+{
+    [self regVolumeActive:NO errorCompletion:nil];
+}
+
+- (void)didBecomeActive:(NSNotification *)noti
+{
+    [self regVolumeActive:YES errorCompletion:nil];
+}
+
+- (void)regVolumeActive:(BOOL)isActive errorCompletion:(void(^)(NSError *error))errorCompletion
+{
     NSError *error;
-    [[AVAudioSession sharedInstance] setActive:YES error:&error];
-    if (error) {
-        NSLog(@"Unable to initialize AVAudioSession");
+    [[AVAudioSession sharedInstance] setActive:isActive error:&error];
+    
+    if (!error) {
+        if (isActive) {
+            [self addVolumeListen];
+        }else{
+            [self removeVolumeListen];
+        }
+    }
+    
+    if (errorCompletion) {
+        errorCompletion(error);
     }
 }
 
-- (void)removeAudioListen{
-//    [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
+#pragma mark - add || remove Listen
+
+- (void)removeVolumeListen
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"AVSystemController_SystemVolumeDidChangeNotification"
+                                                  object:nil];
+}
+
+/*
+ //    [[AVAudioSession sharedInstance] addObserver:self
+ //                                      forKeyPath:@"outputVolume"
+ //                                         options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+ //                                         context:(void *)[AVAudioSession sharedInstance]];
+ //和上面的2选1即可,不过上面的有个bug,在音量满的时候,继续点击音量按键,不会再触发
+ */
+- (void)addVolumeListen
+{
+    [self removeVolumeListen];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(volumeChanged:)
+                                                 name:@"AVSystemController_SystemVolumeDidChangeNotification"
+                                               object:nil];
+}
+
+- (void)addApplicationStatusListen
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterBackground:)
+                                                 name:UIApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(willReturnToForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(willResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
+
+- (void)removeAllAudioListen{
+    //    [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0608806D1D40D04C00457BFD /* KKAudioControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 060880671D40D04C00457BFD /* KKAudioControlManager.m */; };
 		0608806E1D40D04C00457BFD /* KKMuteSwitchListener.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 060880681D40D04C00457BFD /* KKMuteSwitchListener.bundle */; };
 		0608806F1D40D04C00457BFD /* KKMuteSwitchListener.m in Sources */ = {isa = PBXBuildFile; fileRef = 0608806A1D40D04C00457BFD /* KKMuteSwitchListener.m */; };
-		060880701D40D04C00457BFD /* KKVolumeProgressWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 0608806C1D40D04C00457BFD /* KKVolumeProgressWindow.m */; };
+		060880781D41CC8500457BFD /* KKAudioControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 060880751D41CC8500457BFD /* KKAudioControlManager.m */; };
+		060880791D41CC8500457BFD /* KKVolumeProgressWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 060880771D41CC8500457BFD /* KKVolumeProgressWindow.m */; };
 		0681FC481D3E3C8300AEFD20 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0681FC471D3E3C8300AEFD20 /* main.m */; };
 		0681FC4B1D3E3C8300AEFD20 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0681FC4A1D3E3C8300AEFD20 /* AppDelegate.m */; };
 		0681FC4E1D3E3C8300AEFD20 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0681FC4D1D3E3C8300AEFD20 /* ViewController.m */; };
@@ -20,13 +20,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		060880661D40D04C00457BFD /* KKAudioControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKAudioControlManager.h; sourceTree = "<group>"; };
-		060880671D40D04C00457BFD /* KKAudioControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKAudioControlManager.m; sourceTree = "<group>"; };
 		060880681D40D04C00457BFD /* KKMuteSwitchListener.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = KKMuteSwitchListener.bundle; sourceTree = "<group>"; };
 		060880691D40D04C00457BFD /* KKMuteSwitchListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKMuteSwitchListener.h; sourceTree = "<group>"; };
 		0608806A1D40D04C00457BFD /* KKMuteSwitchListener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKMuteSwitchListener.m; sourceTree = "<group>"; };
-		0608806B1D40D04C00457BFD /* KKVolumeProgressWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKVolumeProgressWindow.h; sourceTree = "<group>"; };
-		0608806C1D40D04C00457BFD /* KKVolumeProgressWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKVolumeProgressWindow.m; sourceTree = "<group>"; };
+		060880741D41CC8500457BFD /* KKAudioControlManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKAudioControlManager.h; sourceTree = "<group>"; };
+		060880751D41CC8500457BFD /* KKAudioControlManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKAudioControlManager.m; sourceTree = "<group>"; };
+		060880761D41CC8500457BFD /* KKVolumeProgressWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KKVolumeProgressWindow.h; sourceTree = "<group>"; };
+		060880771D41CC8500457BFD /* KKVolumeProgressWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KKVolumeProgressWindow.m; sourceTree = "<group>"; };
 		0681FC431D3E3C8300AEFD20 /* testAudioListen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testAudioListen.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0681FC471D3E3C8300AEFD20 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0681FC491D3E3C8300AEFD20 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -53,13 +53,13 @@
 		060880651D40D04C00457BFD /* KKAudioControl */ = {
 			isa = PBXGroup;
 			children = (
-				060880661D40D04C00457BFD /* KKAudioControlManager.h */,
-				060880671D40D04C00457BFD /* KKAudioControlManager.m */,
+				060880741D41CC8500457BFD /* KKAudioControlManager.h */,
+				060880751D41CC8500457BFD /* KKAudioControlManager.m */,
+				060880761D41CC8500457BFD /* KKVolumeProgressWindow.h */,
+				060880771D41CC8500457BFD /* KKVolumeProgressWindow.m */,
 				060880681D40D04C00457BFD /* KKMuteSwitchListener.bundle */,
 				060880691D40D04C00457BFD /* KKMuteSwitchListener.h */,
 				0608806A1D40D04C00457BFD /* KKMuteSwitchListener.m */,
-				0608806B1D40D04C00457BFD /* KKVolumeProgressWindow.h */,
-				0608806C1D40D04C00457BFD /* KKVolumeProgressWindow.m */,
 			);
 			path = KKAudioControl;
 			sourceTree = "<group>";
@@ -177,10 +177,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				0681FC4E1D3E3C8300AEFD20 /* ViewController.m in Sources */,
+				060880781D41CC8500457BFD /* KKAudioControlManager.m in Sources */,
+				060880791D41CC8500457BFD /* KKVolumeProgressWindow.m in Sources */,
 				0608806F1D40D04C00457BFD /* KKMuteSwitchListener.m in Sources */,
-				060880701D40D04C00457BFD /* KKVolumeProgressWindow.m in Sources */,
 				0681FC4B1D3E3C8300AEFD20 /* AppDelegate.m in Sources */,
-				0608806D1D40D04C00457BFD /* KKAudioControlManager.m in Sources */,
 				0681FC481D3E3C8300AEFD20 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -62,6 +62,7 @@ static KKAudioControlManager* _instance;
 - (void)removeVolumeListener
 {
     self.volumeView.hidden = YES;
+    [self.volumeView removeAllAudioListen];
     _volumeView = nil;
 }
 
@@ -93,6 +94,10 @@ static KKAudioControlManager* _instance;
         [defaultCenter postNotificationName:KKAudioControlVolumeSmallerNotification object:nil];
     }else if ( oldValue < value){
         [defaultCenter postNotificationName:KKAudioControlVolumeBiggerNotification object:nil];
+    }else if (value == 1){
+        [defaultCenter postNotificationName:KKAudioControlVolumeBiggerNotification object:nil];
+    }else if (value == 0){
+        [defaultCenter postNotificationName:KKAudioControlVolumeSmallerNotification object:nil];
     }
 }
 
