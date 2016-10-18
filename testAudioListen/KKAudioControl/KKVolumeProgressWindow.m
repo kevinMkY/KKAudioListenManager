@@ -45,6 +45,7 @@ const CGFloat SidePadding = 10;
 + (instancetype)defaultVolumeView
 {
     KKVolumeProgressWindow *volume = [[KKVolumeProgressWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    volume.frame = CGRectMake(volume.frame.origin.x, volume.frame.origin.y, volume.frame.size.width, 20);
     volume.animationType = KKVolumeViewAnimationFade;
     volume.progressBarTintColor = [UIColor blackColor];
     volume.progressBarBackgroundColor = [UIColor lightGrayColor];
@@ -54,16 +55,8 @@ const CGFloat SidePadding = 10;
 
 - (void)setup
 {
+    [self regVolumeActive:YES];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-    
-    __block NSError *regError;
-    [self regVolumeActive:YES errorCompletion:^(NSError *error) {
-        regError = error;
-    }];
-    
-    if (regError) {
-        return;
-    }
     
     self.backgroundColor   = [UIColor clearColor];
     self.windowLevel = UIWindowLevelStatusBar + 10.0f;
@@ -217,7 +210,14 @@ const CGFloat SidePadding = 10;
 - (void)volumeChanged:(NSNotification *)notification
 {
     float volume = [[[notification userInfo] objectForKey:@"AVSystemController_AudioVolumeNotificationParameter"] floatValue];
-    [self updateVolume:volume animated:YES];
+    
+    NSString *str1 = [[notification userInfo]objectForKey:@"AVSystemController_AudioCategoryNotificationParameter"];
+    NSString *str2 = [[notification userInfo]objectForKey:@"AVSystemController_AudioVolumeChangeReasonNotificationParameter"];
+    
+    if (([str1 isEqualToString:@"Audio/Video"] || [str1 isEqualToString:@"Ringtone"]) && ([str2 isEqualToString:@"ExplicitVolumeChange"]))
+    {
+        [self updateVolume:volume animated:YES];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
@@ -231,39 +231,38 @@ const CGFloat SidePadding = 10;
 
 - (void)didEnterBackground:(NSNotification *)noti
 {
-    [self regVolumeActive:NO errorCompletion:nil];
+    [self regVolumeActive:NO];
 }
 
 - (void)willReturnToForeground:(NSNotification *)noti
 {
-    [self regVolumeActive:YES errorCompletion:nil];
+    [self regVolumeActive:YES];
 }
 
 - (void)willResignActive:(NSNotification *)noti
 {
-    [self regVolumeActive:NO errorCompletion:nil];
+    [self regVolumeActive:NO];
 }
 
 - (void)didBecomeActive:(NSNotification *)noti
 {
-    [self regVolumeActive:YES errorCompletion:nil];
+    [self regVolumeActive:YES];
 }
 
-- (void)regVolumeActive:(BOOL)isActive errorCompletion:(void(^)(NSError *error))errorCompletion
+- (void)regVolumeActive:(BOOL)isActive
 {
-    NSError *error;
-    [[AVAudioSession sharedInstance] setActive:isActive error:&error];
+    NSError *activeError,*categoryError;
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                           error:&categoryError];
+    [[AVAudioSession sharedInstance] setActive:isActive error:&activeError];
     
-    if (!error) {
+    if (!activeError) {
         if (isActive) {
             [self addVolumeListen];
         }else{
             [self removeVolumeListen];
         }
-    }
-    
-    if (errorCompletion) {
-        errorCompletion(error);
     }
 }
 
@@ -276,13 +275,6 @@ const CGFloat SidePadding = 10;
                                                   object:nil];
 }
 
-/*
- //    [[AVAudioSession sharedInstance] addObserver:self
- //                                      forKeyPath:@"outputVolume"
- //                                         options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
- //                                         context:(void *)[AVAudioSession sharedInstance]];
- //和上面的2选1即可,不过上面的有个bug,在音量满的时候,继续点击音量按键,不会再触发
- */
 - (void)addVolumeListen
 {
     [self removeVolumeListen];
@@ -312,8 +304,9 @@ const CGFloat SidePadding = 10;
                                                object:nil];
 }
 
-- (void)removeAllAudioListen{
-    //    [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
+- (void)removeAllAudioListen
+{
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

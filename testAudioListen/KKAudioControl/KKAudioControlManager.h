@@ -7,10 +7,13 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "KKVolumeProgressWindow.h"
 
 @interface KKAudioControlManager : NSObject
 
 + (instancetype)shareInstance;
+
+- (KKVolumeProgressWindow *)volumeView;
 
 - (void)addVolumeListener;
 - (void)removeVolumeListener;

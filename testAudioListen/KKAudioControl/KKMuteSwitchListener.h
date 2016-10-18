@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import <UIKit/UIKit.h>
 
 typedef void(^KKMuteSwitchListenerBlock)(BOOL silent);
 
@@ -14,6 +14,8 @@ typedef void(^KKMuteSwitchListenerBlock)(BOOL silent);
 
 @property (nonatomic,readonly) BOOL isMute;
 @property (nonatomic,copy) KKMuteSwitchListenerBlock muteListenerBlock;
+
+@property (nonatomic, assign) BOOL shouldBreak;
 
 + (instancetype)shareInstance;
 

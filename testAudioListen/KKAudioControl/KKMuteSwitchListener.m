@@ -7,7 +7,6 @@
 
 #import "KKMuteSwitchListener.h"
 #import <AudioToolbox/AudioToolbox.h>
-#import <UIKit/UIKit.h>
 
 void KKMuteSwitchListenerNotificationCompletionProc(SystemSoundID  ssID,void* clientData);
 
@@ -15,7 +14,6 @@ void KKMuteSwitchListenerNotificationCompletionProc(SystemSoundID  ssID,void* cl
 
 @property (nonatomic, assign) NSTimeInterval interval;
 @property (nonatomic, assign) SystemSoundID soundId;
-@property (nonatomic, assign) BOOL forceEmit;
 @property (nonatomic, assign) BOOL isPaused;
 @property (nonatomic, assign) BOOL isPlaying;
 
@@ -45,7 +43,7 @@ void KKMuteSwitchListenerNotificationCompletionProc(SystemSoundID  ssID,void* cl
             UInt32 yes = 1;
             AudioServicesAddSystemSoundCompletion(self.soundId,
                                                   CFRunLoopGetMain(),
-                                                  kCFRunLoopDefaultMode,
+                                                  kCFRunLoopCommonModes,
                                                   KKMuteSwitchListenerNotificationCompletionProc,
                                                   (__bridge void *)(self));
             AudioServicesSetProperty(kAudioServicesPropertyIsUISound,
@@ -54,7 +52,6 @@ void KKMuteSwitchListenerNotificationCompletionProc(SystemSoundID  ssID,void* cl
                                      sizeof(yes),
                                      &yes);
             [self performSelector:@selector(loopCheck) withObject:nil afterDelay:1];
-            self.forceEmit = YES;
         } else {
             self.soundId = -1;
         }
@@ -74,7 +71,6 @@ void KKMuteSwitchListenerNotificationCompletionProc(SystemSoundID  ssID,void* cl
 
 - (void)setMuteListenerBlock:(KKMuteSwitchListenerBlock)muteListenerBlock{
     _muteListenerBlock = muteListenerBlock;
-    self.forceEmit = YES;
 }
 
 - (void)scheduleCall{
@@ -83,11 +79,15 @@ void KKMuteSwitchListenerNotificationCompletionProc(SystemSoundID  ssID,void* cl
 }
 
 - (void)complete{
+    
+    if (self.shouldBreak) {
+        return;
+    }
+    
     self.isPlaying = NO;
     NSTimeInterval elapsed = [NSDate timeIntervalSinceReferenceDate] - self.interval;
-    BOOL isMute = elapsed < 0.1; // Should have been 0.5 sec, but it seems to return much faster (0.3something)
-    if (self.isMute != isMute || self.forceEmit) {
-        self.forceEmit = NO;
+    BOOL isMute = elapsed < 0.16; // Should have been 0.5 sec, but it seems to return much faster (0.3something)
+    if (self.isMute != isMute) {
         _isMute = isMute;
         if (self.muteListenerBlock)
             self.muteListenerBlock(isMute);
@@ -110,6 +110,14 @@ void KKMuteSwitchListenerNotificationCompletionProc(SystemSoundID  ssID,void* cl
 - (void)willReturnToForeground{
     self.isPaused = NO;
     if (!self.isPlaying){
+        [self scheduleCall];
+    }
+}
+
+- (void)setShouldBreak:(BOOL)shouldBreak
+{
+    _shouldBreak = shouldBreak;
+    if (!shouldBreak) {
         [self scheduleCall];
     }
 }

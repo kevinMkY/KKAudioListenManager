@@ -28,6 +28,10 @@ extern NSString * KKAudioControlMuteTurnOffNotification;
     [[KKAudioControlManager shareInstance] addMuteListener];
 }
 
+- (IBAction)buttonClick:(id)sender {
+    
+}
+
 #pragma mark - audio
 
 - (void)audioControlVolumeBigger

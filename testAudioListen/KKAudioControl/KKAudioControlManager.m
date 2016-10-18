@@ -78,12 +78,13 @@ static KKAudioControlManager* _instance;
             [weakSelf muteSwitchTurnOn];
         }
     };
+    self.muteListener.shouldBreak = NO;
 }
 
 - (void)removeMuteListener
 {
     self.muteListener.muteListenerBlock = nil;
-    _muteListener = nil;
+    self.muteListener.shouldBreak = YES;
 }
 
 #pragma mark - volumedelegate
@@ -92,12 +93,8 @@ static KKAudioControlManager* _instance;
 {
     if (oldValue > value) {
         [defaultCenter postNotificationName:KKAudioControlVolumeSmallerNotification object:nil];
-    }else if ( oldValue < value){
+    }else if ( oldValue < value || value == 1){
         [defaultCenter postNotificationName:KKAudioControlVolumeBiggerNotification object:nil];
-    }else if (value == 1){
-        [defaultCenter postNotificationName:KKAudioControlVolumeBiggerNotification object:nil];
-    }else if (value == 0){
-        [defaultCenter postNotificationName:KKAudioControlVolumeSmallerNotification object:nil];
     }
 }
 
