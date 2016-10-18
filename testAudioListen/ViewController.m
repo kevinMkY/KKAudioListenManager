@@ -7,6 +7,7 @@
 
 #import "ViewController.h"
 #import "KKAudioControlManager.h"
+#import "KKAudioLongPressListener.h"
 
 extern NSString * KKAudioControlVolumeBiggerNotification;
 extern NSString * KKAudioControlVolumeSmallerNotification;
@@ -26,6 +27,8 @@ extern NSString * KKAudioControlMuteTurnOffNotification;
 
     [[KKAudioControlManager shareInstance] addVolumeListener];
     [[KKAudioControlManager shareInstance] addMuteListener];
+    
+    [KKAudioLongPressListener beginListen];
 }
 
 - (IBAction)buttonClick:(id)sender {
