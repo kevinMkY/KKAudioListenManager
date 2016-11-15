@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "KKVolumeProgressWindow.h"
 
+
 @interface KKAudioControlManager : NSObject
 
 + (instancetype)shareInstance;

@@ -7,7 +7,7 @@
 
 #import "KKVolumeProgressWindow.h"
 #import <MediaPlayer/MediaPlayer.h>
-#import <AVFoundation/AVAudioSession.h>
+#import <AVFoundation/AVFAudio.h>
 
 const CGFloat height = 2;
 const CGFloat StatusHeight = 20;
@@ -45,11 +45,11 @@ const CGFloat SidePadding = 10;
 + (instancetype)defaultVolumeView
 {
     KKVolumeProgressWindow *volume = [[KKVolumeProgressWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    volume.frame = CGRectMake(volume.frame.origin.x, volume.frame.origin.y, volume.frame.size.width, 20);
+    volume.frame = CGRectMake(0, 0, volume.frame.size.width, 20);
     volume.animationType = KKVolumeViewAnimationFade;
     volume.progressBarTintColor = [UIColor blackColor];
-    volume.progressBarBackgroundColor = [UIColor lightGrayColor];
-    volume.volumeStatusBackgroundColor = [UIColor whiteColor];
+    volume.progressBarBackgroundColor = [UIColor whiteColor];
+    volume.volumeStatusBackgroundColor = [UIColor lightGrayColor];
     return volume;
 }
 

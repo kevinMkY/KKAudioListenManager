@@ -101,11 +101,11 @@
 				0A99658C1DB5FCD300CA54F7 /* KKAudioControlManager.m */,
 				0A99658D1DB5FCD300CA54F7 /* KKAudioLongPressListener.h */,
 				0A99658E1DB5FCD300CA54F7 /* KKAudioLongPressListener.m */,
-				0A99658F1DB5FCD300CA54F7 /* KKMuteSwitchListener.bundle */,
 				0A9965901DB5FCD300CA54F7 /* KKMuteSwitchListener.h */,
 				0A9965911DB5FCD300CA54F7 /* KKMuteSwitchListener.m */,
 				0A9965921DB5FCD300CA54F7 /* KKVolumeProgressWindow.h */,
 				0A9965931DB5FCD300CA54F7 /* KKVolumeProgressWindow.m */,
+				0A99658F1DB5FCD300CA54F7 /* KKMuteSwitchListener.bundle */,
 			);
 			path = KKAudioControl;
 			sourceTree = "<group>";
