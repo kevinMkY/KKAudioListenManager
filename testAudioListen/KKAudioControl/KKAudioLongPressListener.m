@@ -31,11 +31,6 @@ NSString *const KKAudioLongPressEndNotification = @"KKAudioLongPressEndNotificat
 
 @implementation KKAudioLongPressListener
 
-- (void)dealloc
-{
-    
-}
-
 static KKAudioLongPressListener *_longPressListen;
 
 + (void)beginListen
@@ -89,14 +84,15 @@ static KKAudioLongPressListener *_longPressListen;
         }
         NSTimeInterval interval = [now timeIntervalSinceDate:_lastLongPressDate];
         _lastLongPressDate = now;
-//        DLog(@"------------------------------>%f",interval);
+        NSLog(@"------------------------------>%f",interval);
         
+        
+        //前一次识别为长按,但本次间隔时间过长,则让长按识别自动结束
         if (interval > longPressNeedContinuationMinTimerInterval && _effectiveClick) {
             _effectiveClick = NO;
             return;
         }
 
-        
         //两次按键间隔小于长按所需间隔即为连续长按
         if (interval < longPressNeedContinuationMinTimerInterval) {
             _effectiveClick = YES;
@@ -227,7 +223,6 @@ static KKAudioLongPressListener *_longPressListen;
 
 - (void)removeAllAudioListen
 {
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

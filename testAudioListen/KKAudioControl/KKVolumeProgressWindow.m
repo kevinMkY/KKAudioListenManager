@@ -45,7 +45,7 @@ const CGFloat SidePadding = 10;
 + (instancetype)defaultVolumeView
 {
     KKVolumeProgressWindow *volume = [[KKVolumeProgressWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    volume.frame = CGRectMake(0, 0, volume.frame.size.width, 20);
+    volume.frame = CGRectMake(0, 0, volume.frame.size.width, StatusHeight);
     volume.animationType = KKVolumeViewAnimationFade;
     volume.progressBarTintColor = [UIColor blackColor];
     volume.progressBarBackgroundColor = [UIColor whiteColor];
@@ -56,7 +56,6 @@ const CGFloat SidePadding = 10;
 - (void)setup
 {
     [self regVolumeActive:YES];
-    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     self.backgroundColor   = [UIColor clearColor];
     self.windowLevel = UIWindowLevelStatusBar + 10.0f;
@@ -252,10 +251,10 @@ const CGFloat SidePadding = 10;
 - (void)regVolumeActive:(BOOL)isActive
 {
     NSError *activeError,*categoryError;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
-                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
-                                           error:&categoryError];
-    [[AVAudioSession sharedInstance] setActive:isActive error:&activeError];
+//    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+//                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
+//                                           error:&categoryError];
+//    [[AVAudioSession sharedInstance] setActive:isActive error:&activeError];
     
     if (!activeError) {
         if (isActive) {
@@ -306,7 +305,6 @@ const CGFloat SidePadding = 10;
 
 - (void)removeAllAudioListen
 {
-    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
