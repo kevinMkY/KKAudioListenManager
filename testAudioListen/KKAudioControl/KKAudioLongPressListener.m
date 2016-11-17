@@ -8,10 +8,9 @@
 
 #import "KKAudioLongPressListener.h"
 #import <MediaPlayer/MediaPlayer.h>
-#import <AVFoundation/AVFAudio.h>
-#define defaultCenterPostNotification(notificationName) [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil]
+#import <AVFoundation/AVAudioSession.h>
 
-const NSTimeInterval longPressNeedContinuationMinTimerInterval = 0.15f;
+const NSTimeInterval longPressNeedContinuationMinTimerInterval = 0.2f;
 const NSTimeInterval longPressNeedRecognizeMinTimerInterval = 0.8f;
 
 NSString *const KKAudioShortClickNotification = @"KKAudioShortClickNotification";
@@ -20,7 +19,7 @@ NSString *const KKAudioLongPressEndNotification = @"KKAudioLongPressEndNotificat
 
 @interface KKAudioLongPressListener(){
     NSDate *_lastLongPressDate;
-    BOOL _effectiveClick;
+    NSInteger effectiveTimeCurrentClickCount;
 }
 
 @property (nonatomic, strong) MPVolumeView *volumeView;
@@ -30,6 +29,11 @@ NSString *const KKAudioLongPressEndNotification = @"KKAudioLongPressEndNotificat
 @end
 
 @implementation KKAudioLongPressListener
+
+- (void)dealloc
+{
+    
+}
 
 static KKAudioLongPressListener *_longPressListen;
 
@@ -53,6 +57,7 @@ static KKAudioLongPressListener *_longPressListen;
         [self addSubview:self.volumeView];
         [self regVolumeActive:YES];
         [self addApplicationStatusListen];
+        _lastLongPressDate = [NSDate date];
     }
     return self;
 }
@@ -75,30 +80,31 @@ static KKAudioLongPressListener *_longPressListen;
     if (([str1 isEqualToString:@"Audio/Video"] || [str1 isEqualToString:@"Ringtone"]) && ([str2 isEqualToString:@"ExplicitVolumeChange"]))
     {
         NSDate *now = [NSDate date];
-        if (!_lastLongPressDate) {
-            _lastLongPressDate = now;
-            if (!self.activeTimer) {
-                self.activeTimer = [NSTimer scheduledTimerWithTimeInterval:longPressNeedRecognizeMinTimerInterval target:self selector:@selector(check) userInfo:nil repeats:NO];
-            }
-            return;
-        }
+        //        if (!_lastLongPressDate) {
+        //            _lastLongPressDate = now;
+        //            if (!self.activeTimer) {
+        //                self.activeTimer = [NSTimer kk_scheduledTimerWithTimeInterval:longPressNeedRecognizeMinTimerInterval target:self selector:@selector(check) userInfo:nil repeats:NO];
+        //            }
+        //            return;
+        //        }
         NSTimeInterval interval = [now timeIntervalSinceDate:_lastLongPressDate];
         _lastLongPressDate = now;
-        NSLog(@"------------------------------>%f",interval);
+        //        NSLog(@"------------------------------>%f",interval);
         
+        //        if (interval > longPressNeedContinuationMinTimerInterval && effectiveTimeCurrentClickCount == 1) {
+        //            effectiveTimeCurrentClickCount = 0;
+        //            NSLog(@"------------------------------抛弃此次长按结果");
+        //            return;
+        //        }
         
-        //前一次识别为长按,但本次间隔时间过长,则让长按识别自动结束
-        if (interval > longPressNeedContinuationMinTimerInterval && _effectiveClick) {
-            _effectiveClick = NO;
-            return;
-        }
-
+        NSLog(@"\n--------------------->%f",interval);
+        
         //两次按键间隔小于长按所需间隔即为连续长按
         if (interval < longPressNeedContinuationMinTimerInterval) {
-            _effectiveClick = YES;
+            effectiveTimeCurrentClickCount = 1;
             self.longPressEndTimer = [NSTimer scheduledTimerWithTimeInterval:longPressNeedContinuationMinTimerInterval target:self selector:@selector(endLongPress) userInfo:nil repeats:NO];
         }else{  //短按
-            _effectiveClick = NO;
+            effectiveTimeCurrentClickCount = 0;
             if (!self.activeTimer) {
                 self.activeTimer = [NSTimer scheduledTimerWithTimeInterval:longPressNeedRecognizeMinTimerInterval target:self selector:@selector(check) userInfo:nil repeats:NO];
             }
@@ -121,12 +127,10 @@ static KKAudioLongPressListener *_longPressListen;
 
 - (void)check
 {
-    if (_effectiveClick) {
+    if (effectiveTimeCurrentClickCount > 0) {
         NSLog(@"音量键-----------------------------长按开始");
-        defaultCenterPostNotification(KKAudioLongPressStartNotification);
     }else{
         NSLog(@"音量键-----------------------------短按");
-        defaultCenterPostNotification(KKAudioShortClickNotification);
         self.longPressEndTimer = nil;
     }
     [self reset];
@@ -135,7 +139,6 @@ static KKAudioLongPressListener *_longPressListen;
 - (void)endLongPress
 {
     NSLog(@"音量键-----------------------------长按结束");
-    defaultCenterPostNotification(KKAudioLongPressEndNotification);
     self.longPressEndTimer = nil;
     [self reset];
 }
@@ -144,7 +147,7 @@ static KKAudioLongPressListener *_longPressListen;
 {
     [self.activeTimer invalidate];
     self.activeTimer = nil;
-    _effectiveClick = NO;
+    effectiveTimeCurrentClickCount = 0;
 }
 
 #pragma mark - notification
@@ -223,6 +226,7 @@ static KKAudioLongPressListener *_longPressListen;
 
 - (void)removeAllAudioListen
 {
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
